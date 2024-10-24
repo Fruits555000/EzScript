@@ -5,7 +5,6 @@ export enum TokenType {
     OpenParen, 
     CloseParen,
     BinaryOperator,
-
     Local,
 }
 
@@ -18,19 +17,19 @@ export interface Token {
     type: TokenType
 }
 
-function token (value = "", type: TokenType): Token {
+function token(value = "", type: TokenType): Token {
     return { value, type }
 }
 
-function isalpha (src: string) {
+function isalpha(src: string) {
     return src.toUpperCase() != src.toLowerCase();
 }
 
-function isskippable (str: string) {
+function isskippable(str: string) {
     return str == ' ' || str == '\n' || str == '\t';
 }
 
-function isint (str: string) {
+function isint(str: string) {
     const c = str.charCodeAt(0);
     const bounds = ['0'.charCodeAt(0), '9'.charCodeAt(0)];
 
@@ -44,13 +43,13 @@ export function tokenise(sourceCode: string): Token[] {
     // Build each token until the end of the file
     while (src.length > 0) {
         if (src[0] == "(") {
-            tokens.push(token(src.shift(), TokenType.OpenParen))
+            tokens.push(token(src.shift()!, TokenType.OpenParen))
         } else if (src[0] == ")") {
-            tokens.push(token(src.shift(), TokenType.CloseParen))
-        } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "^") {
-            tokens.push(token(src.shift(), TokenType.BinaryOperator))
+            tokens.push(token(src.shift()!, TokenType.CloseParen))
+        } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "^" || src[0] == "||") {
+            tokens.push(token(src.shift()!, TokenType.BinaryOperator))
         } else if (src[0] == "=") {
-            tokens.push(token(src.shift(), TokenType.Equals))
+            tokens.push(token(src.shift()!, TokenType.Equals))
         } else {
             // Handle multi-character tokens
 
@@ -79,8 +78,8 @@ export function tokenise(sourceCode: string): Token[] {
             } else if (isskippable(src[0])) {
                 src.shift() // Skip the current character
             } else {
-                console.log("Unrecognised characted found in source: ", src[0])
-                Deno.exit(1)
+                console.log("Unrecognised character found in source: ", src[0])
+                Deno.exit(1) // Use process.exit(1) if using Node.js
             }
         }
     }
@@ -88,7 +87,11 @@ export function tokenise(sourceCode: string): Token[] {
     return tokens
 }
 
-const source = await Deno.readTextFile("./test.txt")
-for (const token of tokenise(source)) {
-    console.log(token);
+async function main() {
+    const source = await Deno.readTextFile("./test.txt")
+    for (const token of tokenise(source)) {
+        console.log(token);
+    }
 }
+
+main();
