@@ -6,6 +6,7 @@ export enum TokenType {
     CloseParen,
     BinaryOperator,
     Local,
+    EOF, // Signifies end of file
 }
 
 const KEYWORDS: Record<string, TokenType> = {
@@ -46,7 +47,7 @@ export function tokenise(sourceCode: string): Token[] {
             tokens.push(token(src.shift()!, TokenType.OpenParen))
         } else if (src[0] == ")") {
             tokens.push(token(src.shift()!, TokenType.CloseParen))
-        } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "^" || src[0] == "||") {
+        } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "^" || src[0] == "%") {
             tokens.push(token(src.shift()!, TokenType.BinaryOperator))
         } else if (src[0] == "=") {
             tokens.push(token(src.shift()!, TokenType.Equals))
@@ -84,14 +85,6 @@ export function tokenise(sourceCode: string): Token[] {
         }
     }
 
+    tokens.push({type: TokenType.EOF, value: "EndOfFile"})
     return tokens
 }
-
-async function main() {
-    const source = await Deno.readTextFile("./test.txt")
-    for (const token of tokenise(source)) {
-        console.log(token);
-    }
-}
-
-main();
