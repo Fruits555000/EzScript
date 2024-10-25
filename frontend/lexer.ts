@@ -1,6 +1,5 @@
 export enum TokenType {
     // Literal Types
-    Nil,
     Number,
     Identifier,
 
@@ -9,6 +8,7 @@ export enum TokenType {
 
     // Grouping & Operators
     Equals,
+    Semicolon,
     OpenParen, 
     CloseParen,
     BinaryOperator,
@@ -17,7 +17,6 @@ export enum TokenType {
 
 const KEYWORDS: Record<string, TokenType> = {
     local: TokenType.Local,
-    nil: TokenType.Nil,
 }
 
 export interface Token {
@@ -58,6 +57,8 @@ export function tokenise(sourceCode: string): Token[] {
             tokens.push(token(src.shift()!, TokenType.BinaryOperator))
         } else if (src[0] == "=") {
             tokens.push(token(src.shift()!, TokenType.Equals))
+        } else if (src[0] == ";") {
+            tokens.push(token(src.shift()!, TokenType.Semicolon))
         } else {
             // Handle multi-character tokens
 
@@ -78,7 +79,7 @@ export function tokenise(sourceCode: string): Token[] {
 
                 // Check for reserved keywords
                 const reserved = KEYWORDS[ident];
-                if (typeof reserved == "number") {
+                if (typeof reserved == "undefined") {
                     tokens.push(token(ident, TokenType.Identifier))
                 } else {
                     tokens.push(token(ident, reserved))
