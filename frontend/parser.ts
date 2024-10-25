@@ -1,4 +1,4 @@
-import {Stmt, Program, Expr, BinaryExpr, NumericLiteral, Identifier} from "./ast.ts";
+import {Stmt, Program, Expr, BinaryExpr, NumericLiteral, NilLiteral , Identifier} from "./ast.ts";
 import { tokenise, Token, TokenType } from "./lexer.ts";
 
 export default class Parser {
@@ -71,9 +71,26 @@ export default class Parser {
     }
 
     private parse_multiplicative_expr (): Expr {
+        let left = this.parse_exponeplicative_expr();
+
+        while (this.at().value == "*" || this.at().value == "/" || this.at().value == "%") {
+            const operator = this.eat().value;
+            const right = this.parse_exponeplicative_expr();
+            left = {
+                kind: "BinaryExpr",
+                left,
+                right,
+                operator,
+            } as BinaryExpr;
+        }
+
+        return left;
+    }
+
+    private parse_exponeplicative_expr (): Expr {
         let left = this.parse_primary_expr();
 
-        while (this.at().value == "/" || this.at().value == "*" || this.at().value == "%") {
+        while (this.at().value == "^") {
             const operator = this.eat().value;
             const right = this.parse_primary_expr();
             left = {
@@ -87,13 +104,15 @@ export default class Parser {
         return left;
     }
 
-
     private parse_primary_expr (): Expr {
         const tk = this.at().type
 
         switch (tk) {
             case TokenType.Identifier:
                 return { kind: "Identifier", symbol: this.eat().value} as Identifier;
+            case TokenType.Nil:
+                this.eat(); // Advance past nil keyword
+                return { kind: "NilLiteral", value: "null" } as NilLiteral;
             case TokenType.Number:
                  return { kind: "NumericLiteral", value: parseFloat(this.eat().value)} as NumericLiteral;
 

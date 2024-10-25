@@ -1,16 +1,23 @@
 export enum TokenType {
+    // Literal Types
+    Nil,
     Number,
     Identifier,
+
+    // Keywords
+    Local,
+
+    // Grouping & Operators
     Equals,
     OpenParen, 
     CloseParen,
     BinaryOperator,
-    Local,
     EOF, // Signifies end of file
 }
 
 const KEYWORDS: Record<string, TokenType> = {
-    "local": TokenType.Local
+    local: TokenType.Local,
+    nil: TokenType.Nil,
 }
 
 export interface Token {
@@ -71,7 +78,7 @@ export function tokenise(sourceCode: string): Token[] {
 
                 // Check for reserved keywords
                 const reserved = KEYWORDS[ident];
-                if (reserved == undefined) {
+                if (typeof reserved == "number") {
                     tokens.push(token(ident, TokenType.Identifier))
                 } else {
                     tokens.push(token(ident, reserved))

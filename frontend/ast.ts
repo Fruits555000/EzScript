@@ -1,4 +1,4 @@
-export type NodeType = "Program" | "NumericLiteral" | "Identifier" | "BinaryExpr";
+export type NodeType = "Program" | "NumericLiteral" | "NilLiteral" | "Identifier" | "BinaryExpr";
 
 export interface Stmt {
     kind: NodeType
@@ -26,4 +26,9 @@ export interface Identifier extends Expr {
 export interface NumericLiteral extends Expr {
     kind: "NumericLiteral";
     value: number;
+}
+
+export interface NilLiteral extends Expr {
+    kind: "NilLiteral";
+    value: "null";
 }
