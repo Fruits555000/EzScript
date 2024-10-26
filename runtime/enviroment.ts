@@ -1,4 +1,36 @@
-import type { RuntimeVal } from "./values.ts";
+import { MK_BOOL, MK_NATIVE_FN, MK_NIL, MK_NUMBER, MK_OBJECT, type BooleanVal, type RuntimeVal } from "./values.ts";
+
+export function createGlobalEnviroment() {
+    const env = new Enviroment()
+
+    env.declareVar("nil", MK_NIL(), true)
+    env.declareVar("true", MK_BOOL(true), true)
+    env.declareVar("false", MK_BOOL(false), true)
+
+    // Function Handles
+    function tickFunc() {
+        return MK_NUMBER(Date.now())
+    }
+
+    // Functions
+
+    env.declareVar("print", MK_NATIVE_FN((args, _scope) => {console.log(...args); return MK_NIL();}), true)
+    env.declareVar("warn", MK_NATIVE_FN((args, _scope) => {console.warn(...args); return MK_NIL();}), true)
+    env.declareVar("error", MK_NATIVE_FN((args, _scope) => {console.error(...args); return MK_NIL();}), true)
+
+    env.declareVar("tick", MK_NATIVE_FN(tickFunc), true)
+
+    // Libraries
+
+    env.declareVar("math", MK_OBJECT(
+        new Map()
+        .set("pi", MK_NUMBER(Math.PI))
+        .set("tau", MK_NUMBER(Math.PI * 2))
+        .set("goldr", MK_NUMBER((1 + Math.sqrt(5))/2))
+        ), true)
+
+    return env
+}
 
 export default class Enviroment {
     private parent?: Enviroment;
@@ -6,6 +38,7 @@ export default class Enviroment {
     private constants: Set<string>;
 
     constructor (parentENV?: Enviroment) {
+        const global = parentENV ? true : false
         this.parent = parentENV;
         this.variables = new Map();
         this.constants = new Set();

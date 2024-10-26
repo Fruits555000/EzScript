@@ -5,9 +5,15 @@ export type NodeType =
 
     // Expressions
     | "AssignmentExpr"
+    | "BinaryExpr"
+    | "MemberExpr"
+    | "CallExpr"
+
+    // Literals
+    | "Property"
+    | "ObjectLiteral"
     | "NumericLiteral" 
-    | "Identifier" 
-    | "BinaryExpr";
+    | "Identifier" ;
 
 export interface Stmt {
     kind: NodeType
@@ -39,6 +45,19 @@ export interface BinaryExpr extends Expr {
     operator: string;
 }
 
+export interface CallExpr extends Expr {
+    kind: "CallExpr";
+    args: Expr[];
+    caller: Expr;
+}
+
+export interface MemberExpr extends Expr {
+    kind: "MemberExpr";
+    object: Expr;
+    property: Expr;
+    computed: boolean;
+}
+
 export interface Identifier extends Expr {
     kind: "Identifier";
     symbol: string;
@@ -47,4 +66,15 @@ export interface Identifier extends Expr {
 export interface NumericLiteral extends Expr {
     kind: "NumericLiteral";
     value: number;
+}
+
+export interface Property extends Expr {
+    type: "Property"
+    key: string
+    value?: Expr
+}
+
+export interface ObjectLiteral extends Expr {
+    kind: "ObjectLiteral"
+    properties: Property[]
 }

@@ -5,13 +5,24 @@ export enum TokenType {
 
     // Keywords
     Local,
+    And,
+    Or,
+    Not,
 
     // Grouping & Operators
+    BinaryOperator,
     Equals,
+    Comma,
+    Dot,
+    Colon,
     Semicolon,
     OpenParen, 
     CloseParen,
-    BinaryOperator,
+    OpenBrace,
+    CloseBrace,
+    OpenBracket,
+    CloseBracket,
+
     EOF, // Signifies end of file
 }
 
@@ -33,7 +44,7 @@ function isalpha(src: string) {
 }
 
 function isskippable(str: string) {
-    return str == ' ' || str == '\n' || str == '\t';
+    return str == ' ' || str == '\n' || str == '\t' || str == '\r';
 }
 
 function isint(str: string) {
@@ -53,12 +64,26 @@ export function tokenise(sourceCode: string): Token[] {
             tokens.push(token(src.shift()!, TokenType.OpenParen))
         } else if (src[0] == ")") {
             tokens.push(token(src.shift()!, TokenType.CloseParen))
+        } else if (src[0] == "{") {
+            tokens.push(token(src.shift()!, TokenType.OpenBrace))
+        } else if (src[0] == "}") {
+            tokens.push(token(src.shift()!, TokenType.CloseBrace))
+        }  else if (src[0] == "[") {
+            tokens.push(token(src.shift()!, TokenType.OpenBracket))
+        } else if (src[0] == "]") {
+            tokens.push(token(src.shift()!, TokenType.CloseBracket))
         } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "^" || src[0] == "%") {
             tokens.push(token(src.shift()!, TokenType.BinaryOperator))
         } else if (src[0] == "=") {
             tokens.push(token(src.shift()!, TokenType.Equals))
         } else if (src[0] == ";") {
             tokens.push(token(src.shift()!, TokenType.Semicolon))
+        } else if (src[0] == ":") {
+            tokens.push(token(src.shift()!, TokenType.Colon))
+        } else if (src[0] == ",") {
+            tokens.push(token(src.shift()!, TokenType.Comma))
+        } else if (src[0] == ".") {
+            tokens.push(token(src.shift()!, TokenType.Dot))
         } else {
             // Handle multi-character tokens
 
@@ -85,7 +110,7 @@ export function tokenise(sourceCode: string): Token[] {
                     tokens.push(token(ident, reserved))
                 }
             } else if (isskippable(src[0])) {
-                src.shift() // Skip the current character
+                src.shift() // Skip the current character 
             } else {
                 console.log("Unrecognised character found in source: ", src[0])
                 Deno.exit(1) // Use process.exit(1) if using Node.js
