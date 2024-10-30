@@ -2,10 +2,11 @@ export type NodeType =
     // Statements
     |"Program"
     |"VarDeclaration"
+    |"ForNumericStmt"
+    |"ForGenericStmt"
 
     // Expressions
     | "AssignmentExpr"
-    | "BinaryExpr"
     | "MemberExpr"
     | "CallExpr"
 
@@ -13,6 +14,7 @@ export type NodeType =
     | "Property"
     | "ObjectLiteral"
     | "NumericLiteral" 
+    | "BinaryExpr"
     | "Identifier" ;
 
 export interface Stmt {
@@ -69,12 +71,28 @@ export interface NumericLiteral extends Expr {
 }
 
 export interface Property extends Expr {
-    type: "Property"
-    key: string
-    value?: Expr
+    type: "Property";
+    key: string;
+    value?: Expr;
 }
 
 export interface ObjectLiteral extends Expr {
-    kind: "ObjectLiteral"
-    properties: Property[]
+    kind: "ObjectLiteral";
+    properties: Property[];
 }
+
+export interface ForNumericStmt extends Stmt {
+    kind: "ForNumericStmt";
+    variable: Identifier;
+    start: NumericLiteral;
+    end: NumericLiteral;
+    step: NumericLiteral;
+    body: Expr[];
+}
+
+export interface ForGenericStmt extends Stmt {
+    kind: "ForGenericStmt"
+    variables: Identifier[];
+    iterators: Expr[]
+    body: Expr[]
+}    

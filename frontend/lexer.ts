@@ -5,9 +5,10 @@ export enum TokenType {
 
     // Keywords
     Local,
-    And,
-    Or,
-    Not,
+    For,
+    In,
+    Do,
+    End,
 
     // Grouping & Operators
     BinaryOperator,
@@ -28,6 +29,10 @@ export enum TokenType {
 
 const KEYWORDS: Record<string, TokenType> = {
     local: TokenType.Local,
+    for: TokenType.For,
+    in: TokenType.In,
+    do: TokenType.Do,
+    end: TokenType.End
 }
 
 export interface Token {

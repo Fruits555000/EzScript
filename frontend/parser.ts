@@ -89,38 +89,43 @@ export default class Parser {
 
       return left;
     }
-    parse_object_expr(): Expr {
-      if (this.at().type !== TokenType.OpenBrace) {
-        return this.parse_additive_expr()
-      }
+    private parse_object_expr(): Expr {
+        if (this.at().type !== TokenType.OpenBracket)
 
-      this.eat()
-      const properties = new Array<Property>
+        this.eat(); 
 
-      while (this.not_eof() && this.at().type != TokenType.CloseBrace) {
-        const key = this.expect(TokenType.Identifier, "Object literal key expected an Identifier.").value;
+        const properties = new Array<Property>();
 
-        if (this.at().type == TokenType.Comma) {
-            this.eat();
-            properties.push({key, kind: "Property"} as Property);
-            continue;
-        } else if (this.at().type == TokenType.CloseBrace) {
-            properties.push({key, kind: "Property"} as Property);
-            continue;
+        while (this.not_eof() && this.at().type != TokenType.CloseBrace) {
+            this.expect(TokenType.Dot, "Dot expected following 'Object' expression")
+
+            if(this.at().type != TokenType.Identifier) {
+                throw "Dot ('.') expected following the 'Object' expression";
+            }
+            const key = this.eat().value;
+
+            if (this.at().type == TokenType.Comma) {
+                this.eat();
+                properties.push({ key, kind: "Property" } as Property);
+                continue;
+            }
+            else if (this.at().type == TokenType.CloseBrace) {
+                properties.push({ key, kind: "Property" } as Property);
+                continue;
+            }
+
+            this.expect(TokenType.Colon, "Colon (':') expected following 'identifier' in 'Object' expression.");
+            const value = this.parse_expr();
+
+            properties.push({ key, value, kind: "Property" } as Property);
+
+            if (this.at().type != TokenType.CloseBracket) {
+                this.expect(TokenType.Comma, "Comma (',') or closing bracket ']' expected after 'property' declaration.");
+            }
         }
 
-        this.expect(TokenType.Equals, "Missing equals sign following identifier in ObjectExpr.");
-        const value = this.parse_expr();
-
-        if (this.at().type != TokenType.CloseBrace) {
-            this.expect(TokenType.Comma, "Expected comma or closing bracket following property.")
-        }
-
-        properties.push({kind: "Property", value, key} as Property)
-      }
-
-      this.expect(TokenType.CloseBrace, "Object literal missing closing brace.")
-      return { kind: "ObjectLiteral", properties } as ObjectLiteral;
+        this.expect(TokenType.CloseBracket, "Closing bracket (']') expected at the end of 'Object' expression.");
+        return { kind: "ObjectLiteral", properties } as ObjectLiteral;
     }
 
     private parse_additive_expr (): Expr {
