@@ -1,0 +1,1 @@
+console.log((1 / 3) * (1 + Math.cbrt((29 + 3 * Math.sqrt(93)) / 2) + Math.cbrt((29 - 3 * Math.sqrt(93)) / 2)))
